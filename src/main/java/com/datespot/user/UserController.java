@@ -23,4 +23,14 @@ public class UserController {
         service.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
     }
+
+    // /**
+    // * List a user’s posts.
+    // * GET /api/v1/users/{userId}/posts
+    // */
+    // @GetMapping(path = "/users/{userId}")
+    // public ResponseEntity<List<Post>> listUserPosts(@PathVariable Long userId) {
+    // List<Post> posts = postService.findByUser(userId);
+    // return ResponseEntity.ok(posts);
+    // }
 }

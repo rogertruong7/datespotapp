@@ -45,8 +45,6 @@ public class User implements UserDetails {
     @NotBlank(message = "Last name is required")
     private String lastname;
 
-    
-
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
