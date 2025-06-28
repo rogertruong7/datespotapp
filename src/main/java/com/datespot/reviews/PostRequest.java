@@ -16,6 +16,7 @@ import lombok.Setter;
  *
  */
 public class PostRequest {
+    private String reviewTitle;
     private String reviewText;
     private String location;
     private Boolean isPublic;

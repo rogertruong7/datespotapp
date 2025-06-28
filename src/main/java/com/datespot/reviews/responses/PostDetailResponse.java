@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import com.datespot.reviews.Rating;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,7 +14,7 @@ import com.datespot.reviews.Rating;
 public class PostDetailResponse {
     private Integer id;
     private String location;
-    private Rating rating;
+    private Integer rating;
     private String reviewText;
     private Boolean isPublic;
     private Integer authorId;

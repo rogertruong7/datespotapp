@@ -5,12 +5,14 @@ import lombok.RequiredArgsConstructor;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.datespot.reviews.responses.PostCreatedResponse;
+import com.datespot.reviews.responses.PostResponse;
 import com.datespot.reviews.responses.PostResponseFactory;
 import com.datespot.user.User;
 import com.datespot.user.UserRepository;
@@ -19,21 +21,25 @@ import com.datespot.user.UserRepository;
 @RequiredArgsConstructor
 public class PostService {
 
-    private final PostRepository repository;
+    private final PostRepository postRepository;
     private final PostResponseFactory postResponseFactory;
     private final UserRepository userRepository;
 
     public void save(Post post) {
-        repository.save(post);
+        postRepository.save(post);
     }
 
     public Page<Post> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        return postRepository.findAll(pageable);
     }
 
-    public Post findById(Integer postId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    public PostResponse findById(Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("Post does not exist"));
+        if (!post.getIsPublic()) {
+            throw new IllegalStateException("Post is not public");
+        }
+        return postResponseFactory.toPostResponse(post);
     }
 
     public PostCreatedResponse create(PostRequest request, User user) {
@@ -47,6 +53,7 @@ public class PostService {
         Post post = Post.builder()
                 // postId should not be set manually unless you're doing an update
                 .authorId(user.getId())
+                .reviewTitle(request.getReviewTitle())
                 .reviewText(request.getReviewText())
                 .location(request.getLocation())
                 .isPublic(Boolean.TRUE.equals(request.getIsPublic()))
@@ -73,6 +80,6 @@ public class PostService {
     }
 
     // public Page<Post> findByUser(Integer authorId, Pageable pageable) {
-    // return repository.findAllByAuthorId(authorId, pageable);
+    // return postRepository.findAllByAuthorId(authorId, pageable);
     // }
 }

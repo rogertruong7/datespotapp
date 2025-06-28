@@ -42,6 +42,9 @@ public class Post {
 	@Column(nullable = false)
 	private Integer authorId;
 
+	@Column(nullable = false, length = 200)
+	private String reviewTitle;
+
 	@Column(nullable = false, length = 2048)
 	private String reviewText;
 

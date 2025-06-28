@@ -16,7 +16,8 @@ import com.datespot.reviews.Rating;
 public class PostResponse {
     private Integer id;
     private String location;
-    private Rating rating;
+    private Integer rating;
+    private String reviewTitle;
     private String reviewText;
     private Boolean isPublic;
     private Integer authorId;

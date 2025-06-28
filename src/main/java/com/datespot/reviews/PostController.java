@@ -9,7 +9,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.datespot.reviews.responses.PostCreatedResponse;
+import com.datespot.reviews.responses.PostResponse;
 import com.datespot.user.User;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -17,7 +21,6 @@ import com.datespot.user.User;
 public class PostController {
 
     private final PostService postService;
-    
 
     /**
      * List all posts (global feed), paginated.
@@ -29,30 +32,39 @@ public class PostController {
         return ResponseEntity.ok(page);
     }
 
-
-
     /**
-     * Get a single post (with comments).
+     * ✔️
+     * Get a single post (with comments). No comments atm
      * GET /api/v1/posts/{postId}
      */
     @GetMapping(path = "/{postId}")
-    public ResponseEntity<Post> getPost(
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of post"),
+            @ApiResponse(responseCode = "403", description = "Access denied, post is not public"),
+            @ApiResponse(responseCode = "404", description = "Post not found")
+    })
+    public ResponseEntity<PostResponse> getPost(
             @PathVariable Integer postId) {
-        Post dto = postService.findById(postId);
+        PostResponse dto = postService.findById(postId);
         return ResponseEntity.ok(dto);
     }
 
     /**
+     * ✔️
      * Create a new review.
      * POST /api/v1/posts
      * Body: { "placeId", "rating", "reviewText", "isPublic": true }
      */
-    
+
     @PostMapping
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successful creation of post"),
+            @ApiResponse(responseCode = "403", description = "Access denied, post is not public"),
+            @ApiResponse(responseCode = "404", description = "Post not found")
+    })
     public ResponseEntity<PostCreatedResponse> createPost(
             @RequestBody PostRequest request,
-            @AuthenticationPrincipal User user
-            ) {
+            @AuthenticationPrincipal User user) {
         // Probably create the postId from here
         // authorId from frontend?
         PostCreatedResponse created = postService.create(request, user);
