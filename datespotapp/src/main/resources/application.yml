@@ -1,0 +1,25 @@
+spring:
+  # Change this to database settings
+  datasource:
+    url: jdbc:postgresql://localhost:5432/security
+    username: roger
+    password: psqlLuffy123!
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    
+
+application:
+  security:
+    jwt:
+      secret-key: 5568ac0a3d8595e4f46e42a2716a955e2790801d1ba1d59bce73174b90e74fa1
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
