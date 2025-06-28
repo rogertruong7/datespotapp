@@ -47,8 +47,9 @@ public class UserController {
     /**
      * List a user’s posts.
      * GET /api/v1/users/{userId}/posts
+     * In the future have to implement, if the user is public/ if its private are you following
      */
-    @GetMapping(path = "/posts")
+    @GetMapping(path = "/{userId}/posts")
     public ResponseEntity<List<PostResponse>> listUserPosts(@PathVariable Integer userId) {
         List<Post> posts = postService.findByUser(userId);
         return ResponseEntity.ok(mapListPostToResponse(posts));

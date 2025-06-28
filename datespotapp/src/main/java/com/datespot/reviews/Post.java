@@ -51,6 +51,7 @@ public class Post {
 	@Column(nullable = false)
 	private String location;
 
+	// TODO: this is not changed on the Post itself only on the database
 	private Boolean isPublic;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
