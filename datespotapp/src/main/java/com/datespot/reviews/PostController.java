@@ -23,13 +23,32 @@ public class PostController {
     private final PostService postService;
 
     /**
+     * ✔️
      * List all posts (global feed), paginated.
      * GET /api/v1/posts?page=1&limit=20
      */
     @GetMapping
-    public ResponseEntity<Page<Post>> listAllPosts(Pageable pageable) {
+    public ResponseEntity<Page<PostResponse>> listAllPosts(Pageable pageable) {
         Page<Post> page = postService.findAll(pageable);
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(mapPagePostToResponse(page));
+    }
+
+    private Page<PostResponse> mapPagePostToResponse(Page<Post> page) {
+        Page<PostResponse> responsePage = page.map(post -> {
+            // Convert Post entity to PostResponse DTO
+            return PostResponse.builder()
+                    .id(post.getPostId())
+                    .location(post.getLocation())
+                    .rating(post.getRating().getScore())
+                    .reviewTitle(post.getReviewTitle())
+                    .reviewText(post.getReviewText())
+                    .isPublic(post.getIsPublic())
+                    .authorId(post.getAuthorId())
+                    .createDate(post.getCreateDate())
+                    .lastModified(post.getLastModified())
+                    .build();
+        });
+        return responsePage;
     }
 
     /**
@@ -72,14 +91,16 @@ public class PostController {
     }
 
     /**
+     * ✔️
      * Edit your review.
      * PATCH /api/v1/posts/{postId}
      */
     @PatchMapping(path = "/{postId}")
     public ResponseEntity<Void> updatePost(
             @PathVariable Integer postId,
-            @RequestBody PostRequest request) {
-        postService.update(postId, request);
+            @RequestBody EditPostRequest request,
+            @AuthenticationPrincipal User user) {
+        postService.update(postId, request, user);
         return ResponseEntity.noContent().build();
     }
 

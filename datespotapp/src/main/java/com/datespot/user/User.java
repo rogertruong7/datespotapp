@@ -2,6 +2,7 @@ package com.datespot.user;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -64,13 +65,46 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "user_post_ids", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "post_id")
-    private List<Integer> postIds;
+    private List<Integer> postIds = new ArrayList<>();
+
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "user_followers", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "follower_id")
+    private List<Integer> followers = new ArrayList<>();
+
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "user_following", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "following_id")
+    private List<Integer> following = new ArrayList<>();
 
     public void addPost(Integer postId) {
         postIds.add(postId);
+    }
+
+    public void addFollower(Integer followerId) {
+        if (!followers.contains(followerId)) {
+            followers.add(followerId);
+        }
+    }
+
+    public void addFollowing(Integer followingId) {
+        if (!following.contains(followingId)) {
+            following.add(followingId);
+        }
+    }
+
+    public void removeFollower(Integer followerId) {
+        followers.remove(followerId);
+    }
+
+    public void removeFollowing(Integer followingId) {
+        following.remove(followingId);
     }
 
     @Override

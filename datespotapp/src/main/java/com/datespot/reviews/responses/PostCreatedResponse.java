@@ -11,13 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostResponse {
+public class PostCreatedResponse {
     private Integer id;
-    private String location;
-    private Integer rating;
-    private String reviewTitle;
-    private String reviewText;
-    private Boolean isPublic;
-    private Integer authorId;
-    private LocalDateTime createdAt;
+    private LocalDateTime createDate;
 }

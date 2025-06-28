@@ -19,7 +19,8 @@ public class PostResponseFactory {
                 .reviewText(post.getReviewText())
                 .isPublic(post.getIsPublic())
                 .authorId(post.getAuthorId())
-                .createdAt(post.getCreateDate())
+                .createDate(post.getCreateDate())
+                .lastModified(post.getLastModified())
                 .build();
     }
 
@@ -30,7 +31,7 @@ public class PostResponseFactory {
     public PostCreatedResponse toPostCreatedResponse(Post post) {
         return PostCreatedResponse.builder()
                 .id(post.getPostId())
-                .createdAt(post.getCreateDate())
+                .createDate(post.getCreateDate())
                 .build();
     }
 
