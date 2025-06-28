@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import com.datespot.reviews.Rating;
-
 @Data
 @Builder
 @NoArgsConstructor

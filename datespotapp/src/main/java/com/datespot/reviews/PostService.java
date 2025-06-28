@@ -2,10 +2,8 @@ package com.datespot.reviews;
 
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,7 +62,8 @@ public class PostService {
         System.out.println(post);
         this.save(post);
         managedUser.addPost(post.getPostId());
-        // Hibernate only persists changes if you explicitly save or the transaction commits.
+        // Hibernate only persists changes if you explicitly save or the transaction
+        // commits.
         userRepository.save(managedUser);
         return postResponseFactory.toPostCreatedResponse(post);
     }
