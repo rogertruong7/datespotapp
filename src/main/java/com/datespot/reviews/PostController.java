@@ -1,15 +1,15 @@
-package com.datespot.posts;
+package com.datespot.reviews;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import com.datespot.posts.responses.PostCreatedResponse;
-import com.datespot.posts.responses.PostResponseFactory;
-
-import java.util.List;
+import com.datespot.reviews.responses.PostCreatedResponse;
+import com.datespot.user.User;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -47,10 +47,15 @@ public class PostController {
      * POST /api/v1/posts
      * Body: { "placeId", "rating", "reviewText", "isPublic": true }
      */
+    
     @PostMapping
     public ResponseEntity<PostCreatedResponse> createPost(
-            @RequestBody PostRequest request) {
-        PostCreatedResponse created = postService.create(request);
+            @RequestBody PostRequest request,
+            @AuthenticationPrincipal User user
+            ) {
+        // Probably create the postId from here
+        // authorId from frontend?
+        PostCreatedResponse created = postService.create(request, user);
         return ResponseEntity.status(201).body(created);
     }
 

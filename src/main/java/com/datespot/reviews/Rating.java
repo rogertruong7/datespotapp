@@ -1,4 +1,4 @@
-package com.datespot.posts;
+package com.datespot.reviews;
 
 import jakarta.persistence.*;
 import lombok.*;

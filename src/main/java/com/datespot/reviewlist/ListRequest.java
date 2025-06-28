@@ -1,4 +1,4 @@
-package com.datespot.lists;
+package com.datespot.reviewlist;
 
 import lombok.Builder;
 import lombok.Getter;

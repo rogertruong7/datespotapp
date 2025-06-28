@@ -1,7 +1,8 @@
-package com.datespot.posts.responses;
+package com.datespot.reviews.responses;
 
-import com.datespot.posts.Post;
 import org.springframework.stereotype.Component;
+
+import com.datespot.reviews.Post;
 
 @Component
 public class PostResponseFactory {

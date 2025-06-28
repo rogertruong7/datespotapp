@@ -1,4 +1,4 @@
-package com.datespot.lists;
+package com.datespot.reviewlist;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/api/v1/lists")
 @RequiredArgsConstructor
 public class ListController {
 
@@ -25,7 +25,7 @@ public class ListController {
     }
 
     @GetMapping("/find")
-    public ResponseEntity<List<List>> findAllBooks() {
+    public ResponseEntity<List<ReviewList>> findAllBooks() {
         return ResponseEntity.ok(service.findAll());
     }
 }

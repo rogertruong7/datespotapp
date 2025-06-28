@@ -1,4 +1,4 @@
-package com.datespot.posts;
+package com.datespot.reviews;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,11 +16,8 @@ import lombok.Setter;
  *
  */
 public class PostRequest {
-
-    private Integer postId;
-    private Integer authorId;
     private String reviewText;
     private String location;
     private Boolean isPublic;
-    private Rating rating;
+    private Integer rating;
 }

@@ -1,6 +1,5 @@
-package com.datespot.posts.responses;
+package com.datespot.reviews.responses;
 
-import com.datespot.posts.Rating;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,12 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostResponse {
+public class PostCreatedResponse {
     private Integer id;
-    private String location;
-    private Rating rating;
-    private String reviewText;
-    private Boolean isPublic;
-    private Integer authorId;
     private LocalDateTime createdAt;
 }

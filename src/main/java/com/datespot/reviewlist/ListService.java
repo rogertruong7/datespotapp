@@ -1,4 +1,4 @@
-package com.datespot.book;
+package com.datespot.reviewlist;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,12 +7,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BookService {
+public class ListService {
 
-    private final BookRepository repository;
+    private final ListRepository repository;
 
-    public void save(BookRequest request) {
-        var book = Book.builder()
+    public void save(ListRequest request) {
+        var book = ReviewList.builder()
                 .id(request.getId())
                 .author(request.getAuthor())
                 .isbn(request.getIsbn())
@@ -20,7 +20,7 @@ public class BookService {
         repository.save(book);
     }
 
-    public List<Book> findAll() {
+    public List<ReviewList> findAll() {
         return repository.findAll();
     }
 }

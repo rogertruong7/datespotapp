@@ -1,4 +1,4 @@
-package com.datespot.book;
+package com.datespot.reviewlist;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Book {
+public class ReviewList {
 
 	@Id
 	@GeneratedValue

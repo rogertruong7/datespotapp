@@ -1,13 +1,13 @@
-package com.datespot.posts.responses;
+package com.datespot.reviews.responses;
 
-import com.datespot.posts.Rating;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+import com.datespot.reviews.Rating;
 
 @Data
 @Builder
