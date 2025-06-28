@@ -5,6 +5,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.datespot.reviews.PostRepository;
+
+import jakarta.transaction.Transactional;
+
 import java.security.Principal;
 
 @Service
@@ -13,9 +17,9 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
-    public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
+    private final PostRepository postRepository;
 
-        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    public void changePassword(ChangePasswordRequest request, User user) {
 
         // check if the current password is correct
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -32,4 +36,33 @@ public class UserService {
         // save the new password
         repository.save(user);
     }
+
+    // Transactional means either all changes go through or none, compulsory for jakarta persistance
+    @Transactional
+    public void changeProfile(ChangeProfileRequest request, User connectedUser) {
+        boolean changed = false;
+
+        // Also sets all posts of private
+        if (request.getIsPublic() != null) {
+            connectedUser.setIsPublic(request.getIsPublic());
+            changed = true;
+
+            postRepository.updatePostVisibilityByAuthorId(request.getIsPublic(), connectedUser.getId());
+        }
+
+        if (request.getProfilePicture() != null) {
+            connectedUser.setProfilePicture(request.getProfilePicture());
+            changed = true;
+        }
+
+        if (request.getBiography() != null) {
+            connectedUser.setBiography(request.getBiography());
+            changed = true;
+        }
+
+        if (changed) {
+            repository.save(connectedUser);
+        }
+    }
+
 }

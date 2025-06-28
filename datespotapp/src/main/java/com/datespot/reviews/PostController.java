@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.datespot.reviews.responses.PostCreatedResponse;
 import com.datespot.reviews.responses.PostResponse;
+import com.datespot.reviews.responses.PostResponseFactory;
 import com.datespot.user.User;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class PostController {
 
     private final PostService postService;
+    private final PostResponseFactory postResponseFactory;
 
     /**
      * ✔️
@@ -34,20 +36,7 @@ public class PostController {
     }
 
     private Page<PostResponse> mapPagePostToResponse(Page<Post> page) {
-        Page<PostResponse> responsePage = page.map(post -> {
-            // Convert Post entity to PostResponse DTO
-            return PostResponse.builder()
-                    .id(post.getPostId())
-                    .location(post.getLocation())
-                    .rating(post.getRating().getScore())
-                    .reviewTitle(post.getReviewTitle())
-                    .reviewText(post.getReviewText())
-                    .isPublic(post.getIsPublic())
-                    .authorId(post.getAuthorId())
-                    .createDate(post.getCreateDate())
-                    .lastModified(post.getLastModified())
-                    .build();
-        });
+        Page<PostResponse> responsePage = page.map(post -> postResponseFactory.toPostResponse(post));
         return responsePage;
     }
 

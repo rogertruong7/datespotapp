@@ -51,7 +51,6 @@ public class Post {
 	@Column(nullable = false)
 	private String location;
 
-	@Column(nullable = false)
 	private Boolean isPublic;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

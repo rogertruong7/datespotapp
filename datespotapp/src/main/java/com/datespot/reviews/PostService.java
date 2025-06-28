@@ -3,6 +3,7 @@ package com.datespot.reviews;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
@@ -85,7 +86,7 @@ public class PostService {
                 .reviewTitle(request.getReviewTitle())
                 .reviewText(request.getReviewText())
                 .location(request.getLocation())
-                .isPublic(Boolean.TRUE.equals(request.getIsPublic()))
+                .isPublic(Boolean.TRUE.equals(user.getIsPublic()))
                 .rating(rating)
                 .createDate(LocalDateTime.now())
                 .lastModified(LocalDateTime.now())
@@ -142,4 +143,9 @@ public class PostService {
     public void delete(Integer postId) {
         postRepository.deleteById(postId);
     }
+
+    public List<Post> findByUser(Integer authorId) {
+        return postRepository.findAllByAuthorId(authorId);
+    }
+
 }

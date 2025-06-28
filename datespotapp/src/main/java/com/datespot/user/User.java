@@ -48,6 +48,7 @@ public class User implements UserDetails {
 
     @NotBlank(message = "Username is required")
     @JsonProperty("username")
+    @Column(nullable = false, unique = true)
     private String username;
 
     @NotBlank(message = "Last name is required")
@@ -55,6 +56,7 @@ public class User implements UserDetails {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
+    @Column(nullable = false, unique = true)
     private String email;
 
     @JsonIgnore
@@ -64,6 +66,14 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isPublic = true;
+
+
+    private String profilePicture;
+    private String biography;
 
     @Builder.Default
     @ElementCollection
