@@ -71,6 +71,10 @@ public class User implements UserDetails {
     @Column(name = "post_id")
     private List<Integer> postIds;
 
+    public void addPost(Integer postId) {
+        postIds.add(postId);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

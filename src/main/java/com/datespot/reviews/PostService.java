@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.datespot.reviews.responses.PostCreatedResponse;
 import com.datespot.reviews.responses.PostResponseFactory;
 import com.datespot.user.User;
+import com.datespot.user.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class PostService {
 
     private final PostRepository repository;
     private final PostResponseFactory postResponseFactory;
+    private final UserRepository userRepository;
 
     public void save(Post post) {
         repository.save(post);
@@ -34,6 +37,9 @@ public class PostService {
     }
 
     public PostCreatedResponse create(PostRequest request, User user) {
+        User managedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new NoSuchElementException("User does not exist"));
+
         Rating rating = Rating.builder()
                 .score(request.getRating()) // or however you get it
                 .build();
@@ -50,6 +56,9 @@ public class PostService {
                 .build();
         System.out.println(post);
         this.save(post);
+        managedUser.addPost(post.getPostId());
+        // Hibernate only persists changes if you explicitly save or the transaction commits.
+        userRepository.save(managedUser);
         return postResponseFactory.toPostCreatedResponse(post);
     }
 
