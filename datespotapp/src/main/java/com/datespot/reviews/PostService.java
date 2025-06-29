@@ -148,4 +148,8 @@ public class PostService {
         return postRepository.findAllByAuthorId(authorId);
     }
 
+    public void updatePostVisibilityByAuthorId(Boolean isPublic, Integer authorId) {
+        postRepository.updatePostVisibilityByAuthorId(isPublic, authorId);
+    }
+
 }

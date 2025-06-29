@@ -1,15 +1,13 @@
 package com.datespot.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.datespot.reviews.PostRepository;
+import com.datespot.reviews.PostService;
 
 import jakarta.transaction.Transactional;
 
-import java.security.Principal;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +15,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
-    private final PostRepository postRepository;
+    private final PostService postService;
 
     public void changePassword(ChangePasswordRequest request, User user) {
 
@@ -47,7 +45,7 @@ public class UserService {
             connectedUser.setIsPublic(request.getIsPublic());
             changed = true;
 
-            postRepository.updatePostVisibilityByAuthorId(request.getIsPublic(), connectedUser.getId());
+            postService.updatePostVisibilityByAuthorId(request.getIsPublic(), connectedUser.getId());
         }
 
         if (request.getProfilePicture() != null) {
