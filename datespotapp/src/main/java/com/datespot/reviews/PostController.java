@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import com.datespot.reviews.responses.PostCreatedResponse;
-import com.datespot.reviews.responses.PostResponse;
-import com.datespot.reviews.responses.PostResponseFactory;
 import com.datespot.user.User;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class PostController {
 
     private final PostService postService;
-    private final PostResponseFactory postResponseFactory;
 
     /**
      * ✔️
@@ -36,7 +32,7 @@ public class PostController {
     }
 
     private Page<PostResponse> mapPagePostToResponse(Page<Post> page) {
-        Page<PostResponse> responsePage = page.map(post -> postResponseFactory.toPostResponse(post));
+        Page<PostResponse> responsePage = page.map(PostResponse::DefaultResponse);
         return responsePage;
     }
 
@@ -70,12 +66,12 @@ public class PostController {
             @ApiResponse(responseCode = "403", description = "Access denied, post is not public"),
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
-    public ResponseEntity<PostCreatedResponse> createPost(
+    public ResponseEntity<PostResponse> createPost(
             @RequestBody PostRequest request,
             @AuthenticationPrincipal User user) {
         // Probably create the postId from here
         // authorId from frontend?
-        PostCreatedResponse created = postService.create(request, user);
+        PostResponse created = postService.create(request, user);
         return ResponseEntity.status(201).body(created);
     }
 
@@ -96,10 +92,11 @@ public class PostController {
     /**
      * Delete your review.
      * DELETE /api/v1/posts/{postId}
+     *  Has to also delete from User
      */
     @DeleteMapping(path = "/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Integer postId) {
-        postService.delete(postId);
+    public ResponseEntity<Void> deletePost(@PathVariable Integer postId, @AuthenticationPrincipal User user) {
+        postService.delete(postId, user.getId());
         return ResponseEntity.noContent().build();
     }
 }

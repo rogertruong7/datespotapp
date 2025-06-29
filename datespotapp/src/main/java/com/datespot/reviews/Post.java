@@ -11,6 +11,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.datespot.user.User;
+
 import java.time.LocalDateTime;
 
 /**
@@ -39,8 +41,13 @@ public class Post {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer postId;
 
-	@Column(nullable = false)
-	private Integer authorId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id") // foreign key column in post table
+	private User user;
+
+	public Integer getAuthorId() {
+		return this.user.getId();
+	}
 
 	@Column(nullable = false, length = 200)
 	private String reviewTitle;
@@ -51,12 +58,9 @@ public class Post {
 	@Column(nullable = false)
 	private String location;
 
-	// TODO: this is not changed on the Post itself only on the database
 	private Boolean isPublic;
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "rating_id", referencedColumnName = "ratingId")
-	private Rating rating;
+	private Integer rating;
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)

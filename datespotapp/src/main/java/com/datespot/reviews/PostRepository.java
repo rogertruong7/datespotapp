@@ -10,12 +10,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
-    List<Post> findAllByAuthorId(Integer authorId);
+    List<Post> findAllByUser_Id(Integer authorId);
 
     Page<Post> findByIsPublicTrue(Pageable pageable);
 
     @Modifying
-    @Query("UPDATE Post p SET p.isPublic = :isPublic WHERE p.authorId = :authorId")
+    @Query("UPDATE Post p SET p.isPublic = :isPublic WHERE p.user.id = :authorId")
     void updatePostVisibilityByAuthorId(@Param("isPublic") Boolean isPublic, @Param("authorId") Integer authorId);
-
 }

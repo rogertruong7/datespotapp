@@ -12,11 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.datespot.reviews.responses.PostCreatedResponse;
-import com.datespot.reviews.responses.PostResponse;
-import com.datespot.reviews.responses.PostResponseFactory;
 import com.datespot.user.User;
 import com.datespot.user.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 /**
  * Service class for handling business logic related to posts.
@@ -26,7 +25,6 @@ import com.datespot.user.UserRepository;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final PostResponseFactory postResponseFactory;
     private final UserRepository userRepository;
 
     /**
@@ -62,7 +60,7 @@ public class PostService {
         if (!post.getIsPublic()) {
             throw new IllegalStateException("Post is not public");
         }
-        return postResponseFactory.toPostResponse(post);
+        return PostResponse.DefaultResponse(post);
     }
 
     /**
@@ -73,29 +71,26 @@ public class PostService {
      * @return A response containing the created post's summary.
      * @throws NoSuchElementException if the user does not exist.
      */
-    public PostCreatedResponse create(PostRequest request, User user) {
+    public PostResponse create(PostRequest request, User user) {
         User managedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new NoSuchElementException("User does not exist"));
 
-        Rating rating = Rating.builder()
-                .score(request.getRating())
-                .build();
-
         Post post = Post.builder()
-                .authorId(user.getId())
+                .user(user)
                 .reviewTitle(request.getReviewTitle())
                 .reviewText(request.getReviewText())
                 .location(request.getLocation())
                 .isPublic(Boolean.TRUE.equals(user.getIsPublic()))
-                .rating(rating)
+                .rating(request
+                        .getRating())
                 .createDate(LocalDateTime.now())
                 .lastModified(LocalDateTime.now())
                 .build();
 
         this.save(post);
-        managedUser.addPost(post.getPostId());
+        managedUser.addPost(post);
         userRepository.save(managedUser);
-        return postResponseFactory.toPostCreatedResponse(post);
+        return PostResponse.CreatedResponse(post);
     }
 
     /**
@@ -140,12 +135,20 @@ public class PostService {
      * @param postId The ID of the post to delete.
      * @throws UnsupportedOperationException currently not implemented.
      */
-    public void delete(Integer postId) {
+    @Transactional
+    public void delete(Integer postId, Integer userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+
+        User user = userRepository.findByIdWithPosts(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        user.removePost(post); // This will now work within a transaction
         postRepository.deleteById(postId);
     }
 
     public List<Post> findByUser(Integer authorId) {
-        return postRepository.findAllByAuthorId(authorId);
+        return postRepository.findAllByUser_Id(authorId);
     }
 
     public void updatePostVisibilityByAuthorId(Boolean isPublic, Integer authorId) {

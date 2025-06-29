@@ -1,19 +1,22 @@
 package com.datespot.user;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.ArrayList;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.datespot.reviews.Post;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.CollectionTable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,8 +24,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -76,45 +82,61 @@ public class User implements UserDetails {
     private String biography;
 
     @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "user_post_ids", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "post_id")
-    private List<Integer> postIds = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 
     @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "user_followers", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "follower_id")
-    private List<Integer> followers = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "user_following", joinColumns = @JoinColumn(name = "follower_id"), inverseJoinColumns = @JoinColumn(name = "followee_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
+            "follower_id", "followee_id" }))
+    private Set<User> following = new HashSet<>();
 
     @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "user_following", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "following_id")
-    private List<Integer> following = new ArrayList<>();
+    @ManyToMany(mappedBy = "following")
+    private Set<User> followers = new HashSet<>();
 
-    public void addPost(Integer postId) {
-        postIds.add(postId);
+    public void addPost(Post post) {
+        posts.add(post);
+        post.setUser(this);
     }
 
-    public void addFollower(Integer followerId) {
-        if (!followers.contains(followerId)) {
-            followers.add(followerId);
+    public void removePost(Post post) {
+        posts.remove(post);
+    }
+
+    public void addFollower(User follower) {
+        if (!followers.contains(follower)) {
+            followers.add(follower);
         }
     }
 
-    public void addFollowing(Integer followingId) {
-        if (!following.contains(followingId)) {
-            following.add(followingId);
+    public void addFollowing(User followed) {
+        if (!following.contains(followed)) {
+            following.add(followed);
         }
     }
 
-    public void removeFollower(Integer followerId) {
-        followers.remove(followerId);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof User))
+            return false;
+        User user = (User) o;
+        return id != null && id.equals(user.id);
     }
 
-    public void removeFollowing(Integer followingId) {
-        following.remove(followingId);
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public void removeFollower(User follower) {
+        followers.remove(follower);
+    }
+
+    public void removeFollowing(User followed) {
+        following.remove(followed);
     }
 
     @Override

@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datespot.reviews.Post;
+import com.datespot.reviews.PostResponse;
 import com.datespot.reviews.PostService;
-import com.datespot.reviews.responses.PostResponse;
-import com.datespot.reviews.responses.PostResponseFactory;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,7 +26,6 @@ public class UserController {
 
     private final UserService service;
     private final PostService postService;
-    private final PostResponseFactory postResponseFactory;
 
     @PatchMapping(path = "/password")
     public ResponseEntity<?> changePassword(
@@ -56,8 +55,41 @@ public class UserController {
     }
 
     private List<PostResponse> mapListPostToResponse(List<Post> page) {
-        List<PostResponse> responsePage = page.stream().map(post -> postResponseFactory.toPostResponse(post))
+        List<PostResponse> responsePage = page.stream().map(
+                PostResponse::DefaultResponse)
                 .collect(Collectors.toList());
         return responsePage;
     }
+
+    // Follow a user
+    @PatchMapping("/{userId}/follow")
+    public ResponseEntity<Void> followUser(@PathVariable Integer userId, @AuthenticationPrincipal User user) {
+        service.followUser(userId, user.getId());
+        
+        return ResponseEntity.ok().build();
+    }
+
+    // Unfollow a user
+    @PatchMapping("/{userId}/unfollow")
+    public ResponseEntity<Void> unfollowUser(@PathVariable Integer userId, @AuthenticationPrincipal User user) {
+        service.unfollowUser(userId, user.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    // Get followers of a user
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<Set<UserResponse>> getFollowers(@PathVariable Integer userId) {
+        Set<User> followers = service.getFollowers(userId);
+        Set<UserResponse> response = followers.stream().map(UserResponse::from).collect(Collectors.toSet());
+        return ResponseEntity.ok(response);
+    }
+
+    // Get users the user is following
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<Set<UserResponse>> getFollowing(@PathVariable Integer userId) {
+        Set<User> following = service.getFollowing(userId);
+        Set<UserResponse> response = following.stream().map(UserResponse::from).collect(Collectors.toSet());
+        return ResponseEntity.ok(response);
+    }
+
 }
